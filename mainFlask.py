@@ -133,12 +133,24 @@ def upload():
     else:
         return render_template("upload.html", form=form)
 
-@app.route("/post/<string:postID>/")
+@app.route("/post/<string:postID>/", methods=["GET", "POST"])
 def renderPost(postID):
     form = CommentForm()
     postName = re.sub("[^0-9!:\-\.]+", "", postID)
-    post = readPost(postName)
-    return render_template("post.html", post=post, form=form)
+    if form.validate_on_submit():
+        commentDetails = {"author" : form.author.data, "comment" : form.comment.data}
+        commentOnPost(postName, commentDetails)
+
+        flash("Kommenterede på post")
+        return redirect(url_for("renderPost", postID=postName))
+
+    else:
+        try:
+            post = readPost(postName)
+            comments = readPostComments(postName)
+        except FileNotFoundError:
+            return redirect(url_for("showFeed"))
+        return render_template("post.html", post=post, comments=comments, form=form)
 
 loadSecretKey()
 
