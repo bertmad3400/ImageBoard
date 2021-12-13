@@ -4,6 +4,7 @@
 {% block title %}Feed{% endblock %}
 {% block head %}
 <link rel="stylesheet" href="{{ url_for('static', filename='CSS/post.css') }}", rel="stylesheet">
+<link rel="stylesheet" href="{{ url_for('static', filename='CSS/upload.css') }}">
 {% endblock %}
 
 {% block wrapper %}
@@ -16,11 +17,59 @@
 	{% if post.imageName %}
 		<img id="postImage" src="{{ url_for('static', filename='images/' + post.imageName) }}"/>
 	{% endif %}
-	<div class="threadPost">
+	<div class="threadPost" id="post">
 		<h3> {{ post.title }} </h3>
 		<p class="author"> {{ post.author }} </p>
 		<p class="message"> {{ post.message }} </p>
 	</div>
+
+	<hr>
+
+	<div class="form-wrapper">
+		{% with messages = get_flashed_messages() %}
+				{% if messages %}
+					  <ul class="errors">
+						{% for msg in messages %}
+							  <li class="error">
+								  <i class="fas fa-exclamation"></i> <span class="error-message">{{ msg }}</span>
+							  </li>
+						{% endfor %}
+					  </ul>
+				{% endif %}
+		{% endwith %}
+
+		<form method="POST" action="">
+		  {{ form.csrf_token }}
+
+		  <fieldset class="form-field">{{ form.author.label }} {{ form.author}}
+			{% if form.author.errors %}
+			  <ul class="errors">
+				{% for error in form.author.errors %}
+				  <li class="error">
+					  <i class="fas fa-exclamation"></i> <span class="error-message">{{ error }}</span>
+				  </li>
+				{% endfor %}
+			  </ul>
+			{% endif %}
+		  </fieldset>
+
+		  <fieldset id="message-field" class="form-field">{{ form.message.label }} {{ form.message}}
+			{% if form.message.errors %}
+			  <ul class="errors">
+				{% for error in form.message.errors %}
+				  <li class="error">
+					  <i class="fas fa-exclamation"></i> <span class="error-message">{{ error }}</span>
+				  </li>
+				{% endfor %}
+			  </ul>
+			{% endif %}
+		  </fieldset>
+
+		{{ form.submit }}
+
+		</form>
+	</div>
+
 {% endblock %}
 
 {% block body %}

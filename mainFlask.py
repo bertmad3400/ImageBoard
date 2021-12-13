@@ -44,6 +44,11 @@ class UploadForm(FlaskForm):
 
         return True
 
+class CommentForm(FlaskForm):
+    author = StringField("Brugernavn:", validators=[InputRequired(), Length(max=30, message=('Dit brugernavn er for langt. Den skal være mindre end 30 karakterere lang.'))], default="Anon")
+    comment = TextAreaField('Kommentar:', validators=[InputRequired(), Length(max=200, message=('Din kommentar er for lang. Den skal være mindre end 200 karakterere lang.'))])
+    submit = SubmitField('Kommenter')
+
 
 def loadSecretKey():
     if os.path.isfile("./secret.key"):
@@ -113,9 +118,10 @@ def upload():
 
 @app.route("/post/<string:postID>/")
 def renderPost(postID):
+    form = CommentForm()
     postName = re.sub("[^0-9!:\-\.]+", "", postID)
     post = readPost(postName)
-    return render_template("post.html", post=post)
+    return render_template("post.html", post=post, form=form)
 
 loadSecretKey()
 
