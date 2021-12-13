@@ -117,12 +117,13 @@ def upload():
 
     if form.validate_on_submit():
         if form.imageFile.data:
+
             imageName = str(uuid.uuid4()) + "." + form.imageFile.data.filename.rsplit('.', 1)[1].lower()
             form.imageFile.data.save(os.path.join(app.config['UPLOAD_FOLDER'], imageName))
         else:
             imageName = ""
 
-        messageDetails = {"imageName" : imageName, "author" : form.author.data if form.author.data else "", "title" : form.title.data, "message" : form.message.data}
+        messageDetails = {"imageName" : imageName, "author" : form.author.data, "title" : " ".join(letter.capitalize() for letter in form.title.data.split()), "message" : form.message.data}
         fileName = datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")
 
         saveNewPost(messageDetails)
