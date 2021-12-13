@@ -1,0 +1,27 @@
+ <!DOCTYPE html>
+
+{% extends "base.html" %}
+{% block title %}Feed{% endblock %}
+{% block head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='CSS/post.css') }}", rel="stylesheet">
+{% endblock %}
+
+{% block wrapper %}
+	{% with messages = get_flashed_messages() %}
+			{% if messages %}
+				<span id="successMessage">{{ messages[0] }} </span>
+			{% endif %}
+	{% endwith %}
+
+	{% if post.imageName %}
+		<img id="postImage" src="{{ url_for('static', filename='images/' + post.imageName) }}"/>
+	{% endif %}
+	<div class="threadPost">
+		<h3> {{ post.title }} </h3>
+		<p class="author"> {{ post.author }} </p>
+		<p class="message"> {{ post.message }} </p>
+	</div>
+{% endblock %}
+
+{% block body %}
+{% endblock %}

@@ -1,6 +1,8 @@
 #!/usr/bin/python3
 from flask import Flask, render_template, redirect, url_for, flash, request
 
+import re
+
 import os, random
 
 import json
@@ -108,6 +110,12 @@ def upload():
         return redirect(url_for("showFeed"))
     else:
         return render_template("upload.html", form=form)
+
+@app.route("/post/<string:postID>/")
+def renderPost(postID):
+    postName = re.sub("[^0-9!:\-\.]+", "", postID)
+    post = readPost(postName)
+    return render_template("post.html", post=post)
 
 loadSecretKey()
 
