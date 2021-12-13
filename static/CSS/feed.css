@@ -26,10 +26,21 @@
 	}
 }
 
+a {
+  width: 100%;
+  height: 100%;
+  text-decoration: inherit;
+  color: inherit;
+}
+
 /* The Picture Frame */
 .message-frame{
   margin: 0;
   width: 100%;
+  height: 100%;
+
+  /* For aligning properly in anchor tag*/
+  display: inline-block;
 
   font-size: 1.2rem;
   text-align: left;

@@ -69,7 +69,10 @@ def readPost(fileName):
         detailNames = reader.__next__()
         postContent = reader.__next__()
 
-    return {detailName:postContent[i] for i,detailName in enumerate(detailNames)}
+    postContent = {detailName:postContent[i] for i,detailName in enumerate(detailNames)}
+    postContent["postID"] = fileName
+
+    return postContent
 
 
 @app.route("/")
@@ -99,8 +102,7 @@ def upload():
         messageDetails = {"imageName" : imageName, "author" : form.author.data if form.author.data else "", "title" : form.title.data, "message" : form.message.data}
         fileName = datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")
 
-        with open(f"./static/messages/{fileName}.json", "w") as messageFileObject:
-            json.dump(messageDetails, messageFileObject)
+        saveNewPost(messageDetails)
 
         flash("Uploaded besked")
         return redirect(url_for("showFeed"))

@@ -15,16 +15,18 @@
 
 	<div id="board-grid">
 		{% for message in messageList %}
-			<figure class="message-frame">
-				{% if message.imageName %}
-					<img src="{{ url_for('static', filename='images/' + message.imageName) }}"/>
-				{% endif %}
-				<figcaption>
-					<h3> {{ message.title }} </h3>
-					<p class="author"> {{message.author}} </p>
-					<p class="message"> {{ message.message }} </p>
-				</figcaption>
-			</figure>
+			<a href="{{ url_for('renderPost', postID=message.postID) }}">
+				<figure class="message-frame">
+					{% if message.imageName %}
+						<img src="{{ url_for('static', filename='images/' + message.imageName) }}"/>
+					{% endif %}
+					<figcaption>
+						<h3> {{ message.title }} </h3>
+						<p class="author"> {{message.author}} </p>
+						<p class="message"> {{ message.message }} </p>
+					</figcaption>
+				</figure>
+			</a>
 		{% endfor %}
 	</div>
 {% endblock %}
