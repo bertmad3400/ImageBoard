@@ -63,6 +63,15 @@ def saveNewPost(details):
     with open(f"./static/messages/{fileName}", "w") as msgFile:
         csv.writer(msgFile, delimiter=",").writerows(postContent)
 
+def readPost(fileName):
+    with open(f"./static/messages/{fileName}", "r") as msgFile:
+        reader = csv.reader(msgFile, delimiter=",")
+        detailNames = reader.__next__()
+        postContent = reader.__next__()
+
+    return {detailName:postContent[i] for i,detailName in enumerate(detailNames)}
+
+
 @app.route("/")
 def showFeed():
     messagesPath = os.listdir("./static/messages/")
