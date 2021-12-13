@@ -58,13 +58,13 @@ def saveNewPost(details):
         postContent[0].append(detailName)
         postContent[1].append(details[detailName])
 
-    fileName = datetime.now().strftime("%Y!%m!%d-%H:%M:%S.%f") + ".csv"
+    fileName = datetime.now().strftime("%Y!%m!%d-%H:%M:%S.%f")
 
-    with open(f"./static/messages/{fileName}", "w") as msgFile:
+    with open(f"./static/messages/{fileName}.csv", "w") as msgFile:
         csv.writer(msgFile, delimiter=",").writerows(postContent)
 
 def readPost(fileName):
-    with open(f"./static/messages/{fileName}", "r") as msgFile:
+    with open(f"./static/messages/{fileName}.csv", "r") as msgFile:
         reader = csv.reader(msgFile, delimiter=",")
         detailNames = reader.__next__()
         postContent = reader.__next__()
@@ -79,9 +79,8 @@ def showFeed():
     messageList = []
 
     for messageFile in messagesPath:
-        if messageFile.endswith(".json"):
-            with open(f"./static/messages/{messageFile}", "r") as messageFileObject:
-                messageList.append(json.load(messageFileObject))
+        if messageFile.endswith(".csv"):
+            messageList.append(readPost(messageFile.replace(".csv", "")))
 
     return render_template("feed.html", messageList=messageList)
     
