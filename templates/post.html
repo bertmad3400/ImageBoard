@@ -23,21 +23,16 @@
 		<p class="message"> {{ post.message }} </p>
 	</div>
 
+	{% for comment in comments %}
+		<div class="threadPost">
+			<p class="author"> {{ comment.author }} </p>
+			<p class="message"> {{ comment.comment }} </p>
+		</div>
+	{% endfor %}
+
 	<hr>
 
 	<div class="form-wrapper">
-		{% with messages = get_flashed_messages() %}
-				{% if messages %}
-					  <ul class="errors">
-						{% for msg in messages %}
-							  <li class="error">
-								  <i class="fas fa-exclamation"></i> <span class="error-message">{{ msg }}</span>
-							  </li>
-						{% endfor %}
-					  </ul>
-				{% endif %}
-		{% endwith %}
-
 		<form method="POST" action="">
 		  {{ form.csrf_token }}
 
@@ -53,10 +48,10 @@
 			{% endif %}
 		  </fieldset>
 
-		  <fieldset id="message-field" class="form-field">{{ form.message.label }} {{ form.message}}
-			{% if form.message.errors %}
+		  <fieldset id="message-field" class="form-field">{{ form.comment.label }} {{ form.comment }}
+			{% if form.comment.errors %}
 			  <ul class="errors">
-				{% for error in form.message.errors %}
+				{% for error in form.comment.errors %}
 				  <li class="error">
 					  <i class="fas fa-exclamation"></i> <span class="error-message">{{ error }}</span>
 				  </li>
