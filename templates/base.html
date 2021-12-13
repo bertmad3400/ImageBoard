@@ -1,0 +1,39 @@
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width initial-scale=1" />
+
+		<title>BKI - {% block title %}{% endblock%}</title>
+
+		<!-- Used for favicons and icons on chrome on android and iOS/macOS --!>
+		<link rel="apple-touch-icon" sizes="180x180" href="{{ url_for('static', filename='icons/apple-touch-icon.png') }}">
+		<link rel="icon" type="image/png" sizes="32x32" href="{{ url_for('static', filename='icons/favicon-32x32.png') }}">
+		<link rel="icon" type="image/png" sizes="16x16" href="{{ url_for('static', filename='icons/favicon-16x16.png') }}">
+		<link rel="manifest" href="{{ url_for('static', filename='icons/site.webmanifest') }}">
+		<link rel="mask-icon" href="{{ url_for('static', filename='icons/safari-pinned-tab.svg') }}" color="#5bbad5">
+		<link rel="shortcut icon" href="{{ url_for('static', filename='icons/favicon.ico') }}">
+		<meta name="theme-color" content="#ffffff">
+
+		<link rel="stylesheet" href="{{ url_for('static', filename='CSS/base.css') }}", rel="stylesheet">
+
+		{% block head %}
+		{% endblock %}
+	</head>
+	<body>
+		<div class="wrapper">
+		<h1>BKI - {{ self.title() }}</h1>
+			<h2>Et ImageBoard Udviklet Af Elever På BK For Elever På BK</h2>
+
+			<div id="navigator">
+				
+				<h3> <a href="{{ url_for('showFeed') }}">Feed</a> </h3>
+				<h3> <a href="{{ url_for('upload') }}">Upload</a> </h3>
+				
+			</div>
+			{% block wrapper %}
+			{% endblock %}
+		</div>
+		{% block body %}
+		{% endblock %}
+	</body>
+</html>

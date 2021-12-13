@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+{% block title %}Upload{% endblock %}
+{% block head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='CSS/upload.css') }}">
+{% endblock %}
+{% block wrapper %}
+<div class="form-wrapper">
+	{% with messages = get_flashed_messages() %}
+			{% if messages %}
+				  <ul class="errors">
+					{% for msg in messages %}
+						  <li class="error">
+							  <i class="fas fa-exclamation"></i> <span class="error-message">{{ msg }}</span>
+						  </li>
+					{% endfor %}
+				  </ul>
+			{% endif %}
+	{% endwith %}
+  <form method="POST" action="" enctype="multipart/form-data">
+	  {{ form.csrf_token }}
+
+	  <fieldset class="form-field">{{ form.title.label }} {{ form.title}}
+		{% if form.title.errors %}
+		  <ul class="errors">
+			{% for error in form.title.errors %}
+			  <li class="error">
+				  <i class="fas fa-exclamation"></i> <span class="error-message">{{ error }}</span>
+			  </li>
+			{% endfor %}
+		  </ul>
+		{% endif %}
+	  </fieldset>
+
+	  <fieldset class="form-field">{{ form.author.label }} {{ form.author}}
+		{% if form.author.errors %}
+		  <ul class="errors">
+			{% for error in form.author.errors %}
+			  <li class="error">
+				  <i class="fas fa-exclamation"></i> <span class="error-message">{{ error }}</span>
+			  </li>
+			{% endfor %}
+		  </ul>
+		{% endif %}
+	  </fieldset>
+
+	  <fieldset id="message-field" class="form-field">{{ form.message.label }} {{ form.message}}
+		{% if form.message.errors %}
+		  <ul class="errors">
+			{% for error in form.message.errors %}
+			  <li class="error">
+				  <i class="fas fa-exclamation"></i> <span class="error-message">{{ error }}</span>
+			  </li>
+			{% endfor %}
+		  </ul>
+		{% endif %}
+	  </fieldset>
+
+	  <fieldset class="form-field">{{ form.imageFile.label }} {{ form.imageFile}}
+		{% if form.imageFile.errors %}
+		  <ul class="errors">
+			{% for error in form.imageFile.errors %}
+			  <li class="error">
+				  <i class="fas fa-exclamation"></i> <span class="error-message">{{ error }}</span>
+			  </li>
+			{% endfor %}
+		  </ul>
+		{% endif %}
+	  </fieldset>
+
+	{{ form.submit }}
+
+  </form>
+</div>
+{% endblock %}

@@ -1,0 +1,33 @@
+ <!DOCTYPE html>
+
+{% extends "base.html" %}
+{% block title %}Feed{% endblock %}
+{% block head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='CSS/feed.css') }}", rel="stylesheet">
+{% endblock %}
+
+{% block wrapper %}
+	{% with messages = get_flashed_messages() %}
+			{% if messages %}
+				<span id="successMessage">{{ messages[0] }} </span>
+			{% endif %}
+	{% endwith %}
+
+	<div id="board-grid">
+		{% for message in messageList %}
+			<figure class="message-frame">
+				{% if message.imageName %}
+					<img src="{{ url_for('static', filename='images/' + message.imageName) }}"/>
+				{% endif %}
+				<figcaption>
+					<h3> {{ message.title }} </h3>
+					<p class="author"> {{message.author}} </p>
+					<p class="message"> {{ message.message }} </p>
+				</figcaption>
+			</figure>
+		{% endfor %}
+	</div>
+{% endblock %}
+
+{% block body %}
+{% endblock %}
