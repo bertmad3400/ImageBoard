@@ -81,6 +81,22 @@ def readPost(fileName):
 
     return postContent
 
+def readPostComments(fileName):
+    comments = []
+    with open(f"./static/messages/{fileName}.csv", "r") as msgFile:
+        reader = csv.reader(msgFile, delimiter=",")
+        reader.__next__(); reader.__next__()
+        for comment in reader:
+            print(comment)
+            comments.append({"author" : comment[1], "comment" : comment[2]})
+    return comments
+
+def commentOnPost(fileName, details):
+    commentContent = ["", details["author"], details["comment"], ""]
+
+    with open(f"./static/messages/{fileName}.csv", "a") as postFile:
+        csv.writer(postFile, delimiter=",").writerow(commentContent)
+
 
 @app.route("/")
 def showFeed():
