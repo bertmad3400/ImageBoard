@@ -4,6 +4,7 @@ from flask import Flask, render_template, redirect, url_for, flash, request
 import os, random
 
 import json
+import csv
 
 import uuid
 
@@ -51,6 +52,16 @@ def loadSecretKey():
             file.write(currentSecretKey)
         app.secret_key = currentSecretKey
 
+def saveNewPost(details):
+    postContent = [[], []]
+    for detailName in ["title", "author", "message", "imageName"]:
+        postContent[0].append(detailName)
+        postContent[1].append(details[detailName])
+
+    fileName = datetime.now().strftime("%Y!%m!%d-%H:%M:%S.%f") + ".csv"
+
+    with open(f"./static/messages/{fileName}", "w") as msgFile:
+        csv.writer(msgFile, delimiter=",").writerows(postContent)
 
 @app.route("/")
 def showFeed():
