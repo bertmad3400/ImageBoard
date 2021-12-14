@@ -23,7 +23,7 @@
 		<p class="message"> {{ post.message }} </p>
 	</div>
 
-	{% for comment in comments %}
+	{% for comment in post.comments %}
 		<div class="threadPost">
 			<p class="author"> {{ comment.author }} </p>
 			<p class="message"> {{ comment.comment }} </p>
