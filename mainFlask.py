@@ -71,13 +71,19 @@ def saveNewPost(details):
         csv.writer(msgFile, delimiter=",").writerows(postContent)
 
 def readPost(fileName):
+    commentList = []
+
     with open(f"./static/messages/{fileName}.csv", "r") as msgFile:
         reader = csv.reader(msgFile, delimiter=",")
         detailNames = reader.__next__()
         postContent = reader.__next__()
 
+        for comment in reader:
+            commentList.append({"author" : comment[1], "comment" : comment[2]})
+
     postContent = {detailName:postContent[i] for i,detailName in enumerate(detailNames)}
     postContent["postID"] = fileName
+    postContent["comments"] = commentList
 
     return postContent
 
@@ -147,10 +153,9 @@ def renderPost(postID):
     else:
         try:
             post = readPost(postName)
-            comments = readPostComments(postName)
         except FileNotFoundError:
             return redirect(url_for("showFeed"))
-        return render_template("post.html", post=post, comments=comments, form=form)
+        return render_template("post.html", post=post, form=form)
 
 loadSecretKey()
 
