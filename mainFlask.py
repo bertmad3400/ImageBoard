@@ -39,7 +39,7 @@ def loadSecretKey():
 
 @app.template_filter()
 def formatPostContent(content):
-    lineList = re.split(r'(?:\r\n|\r|\n){2,}', content)
+    lineList = re.split(r'(?:\r\n|\r|\n)', content)
 
     formattedContent = []
 

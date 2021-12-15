@@ -22,7 +22,11 @@
 						<h3> {{ message.title | title }} </h3>
 						<p class="author"> {{message.author}} </p>
 						{% for messageLine in message.content|formatPostContent %}
-							<p class="message {% if messageLine.green %}green-text{% endif %}" > {{ messageLine.content }} </p>
+							{% if messageLine.content %}
+								<p class="message {% if messageLine.green %}green-text{% endif %}" > {{ messageLine.content }} </p>
+							{% else %}
+								<br>
+							{% endif %}
 						{% endfor %}
 						<p class="commentCount"> {{ message.commentCount }} comments </p>
 					</figcaption>
