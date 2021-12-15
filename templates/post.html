@@ -16,7 +16,7 @@
 		<img id="postImage" src="{{ url_for('static', filename='images/' + post.image_id) }}"/>
 	{% endif %}
 	<div class="threadPost" id="post">
-		<h3> {{ post.title }} </h3>
+		<h3> {{ post.title | title }} </h3>
 		<p class="author"> {{ post.author }} </p>
 		<p class="message"> {{ post.content }} </p>
 	</div>

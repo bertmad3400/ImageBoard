@@ -19,7 +19,7 @@
 						<img src="{{ url_for('static', filename='images/' + message.image_id) }}"/>
 					{% endif %}
 					<figcaption>
-						<h3> {{ message.title }} </h3>
+						<h3> {{ message.title | title }} </h3>
 						<p class="author"> {{message.author}} </p>
 						<p class="message"> {{ message.content }} </p>
 						<p class="commentCount"> {{ message.commentCount }} comments </p>

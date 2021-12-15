@@ -65,7 +65,7 @@ def upload():
         else:
             imageName = None
 
-        messageDetails = {"imageName" : imageName, "author" : form.author.data, "title" : " ".join(letter.capitalize() for letter in form.title.data.split()), "message" : form.message.data}
+        messageDetails = {"imageName" : imageName, "author" : form.author.data, "title" : form.title.data, "message" : form.message.data}
         fileName = datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")
 
         saveNewPost(messageDetails)
