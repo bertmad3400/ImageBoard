@@ -18,13 +18,17 @@
 	<div class="threadPost" id="post">
 		<h3> {{ post.title | title }} </h3>
 		<p class="author"> {{ post.author }} </p>
-		<p class="message"> {{ post.content }} </p>
+		{% for messageLine in post.content|formatPostContent %}
+			<p class="message {% if messageLine.green %}green-text{% endif %}" > {{ messageLine.content }} </p>
+		{% endfor %}
 	</div>
 
 	{% for comment in comments %}
 		<div class="threadPost">
 			<p class="author"> {{ comment.author }} </p>
-			<p class="message"> {{ comment.content }} </p>
+			{% for commentLine in comment.content|formatPostContent %}
+				<p class="message {% if commentLine.green %}green-text{% endif %}" > {{ commentLine.content }} </p>
+			{% endfor %}
 		</div>
 	{% endfor %}
 

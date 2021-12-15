@@ -8,6 +8,8 @@ import csv
 
 import uuid
 
+import re
+
 from pathlib import Path
 import secrets
 
@@ -35,9 +37,20 @@ def loadSecretKey():
             file.write(currentSecretKey)
         app.secret_key = currentSecretKey
 
+@app.template_filter()
+def formatPostContent(content):
+    lineList = re.split(r'(?:\r\n|\r|\n){2,}', content)
+
+    formattedContent = []
+
+    for line in lineList:
+        formattedContent.append({"content" : line, "green" : True if line.strip().startswith(">") else False})
+
+    return formattedContent
+
+
 @app.before_request
 def checkIP():
-    print(request.environ.get('HTTP_X_REAL_IP', request.remote_addr))
     if request.environ.get('HTTP_X_REAL_IP', request.remote_addr) not in allowedIPs:
         return render_template("accessDenied.html")
 
@@ -66,7 +79,6 @@ def upload():
             imageName = None
 
         messageDetails = {"imageName" : imageName, "author" : form.author.data, "title" : form.title.data, "message" : form.message.data}
-        fileName = datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")
 
         saveNewPost(messageDetails)
 
@@ -80,6 +92,7 @@ def renderPost(postID):
     form = CommentForm()
     if form.validate_on_submit():
         commentDetails = {"author" : form.author.data, "comment" : form.comment.data}
+
         commentOnPost(postID, commentDetails)
 
         flash("Kommenterede på post")

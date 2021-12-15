@@ -43,3 +43,9 @@
 	opacity: 0.7;
 	transition: opacity .25s ease-in-out;
 }
+
+p.green-text {
+  color: #74c458 !important;
+  font-style: oblique;
+  font-weight: bold;
+}
