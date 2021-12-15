@@ -47,6 +47,7 @@ div#post {
   margin-bottom: 1.5rem;
   font-size: 1rem;
   color: #d9d9d9;
+  white-space: pre-line;
 }
 
 hr {

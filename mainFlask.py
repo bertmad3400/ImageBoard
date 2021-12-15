@@ -1,8 +1,6 @@
 #!/usr/bin/python3
 from flask import Flask, render_template, redirect, url_for, flash, request
 
-import re
-
 import os, random
 
 import json
@@ -13,6 +11,8 @@ import uuid
 from pathlib import Path
 import secrets
 
+import sqlite3
+
 from datetime import datetime
 
 app = Flask(__name__)
@@ -21,6 +21,8 @@ app.template_folder = "./templates"
 
 app.config['UPLOAD_FOLDER'] = './static/images/'
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1000 * 1000
+
+DBName = "BKI.db"
 
 from forms import UploadForm, CommentForm
 
@@ -33,51 +35,55 @@ def loadSecretKey():
             file.write(currentSecretKey)
         app.secret_key = currentSecretKey
 
+def executeDBCommand(command, paramaters, returnResponse=False):
+    conn = sqlite3.connect(DBName)
+    cur = conn.cursor()
+
+    cur.execute(command, paramaters)
+    if returnResponse:
+        DBResults = cur.fetchall()
+
+    conn.commit()
+    conn.close()
+    if returnResponse:
+        return DBResults
+
+def countComments(postID):
+    return executeDBCommand("SELECT COUNT(id) FROM comments WHERE post_id=?", (postID,), True)[0][0]
+
+def listPosts(limit=False):
+    collumns = "id, title, author, content, image_id"
+    command = f"SELECT {collumns} FROM posts ORDER BY id DESC"
+
+    if limit:
+        command += f" LIMIT {str(limit)}"
+
+    results = executeDBCommand(command, (), True)
+
+    return [{descriptor:value for (descriptor,value) in zip(collumns.split(", "), result)} for result in results]
+
 def saveNewPost(details):
-    postContent = [[], []]
-    for detailName in ["title", "author", "message", "imageName"]:
-        postContent[0].append(detailName)
-        postContent[1].append(details[detailName])
+    executeDBCommand("INSERT INTO posts (title, author, content, image_id) VALUES (?, ?, ?, ?)", (details["title"], details["author"], details["message"], details["imageName"]))
 
-    fileName = datetime.now().strftime("%Y!%m!%d-%H:%M:%S.%f")
 
-    with open(f"./static/messages/{fileName}.csv", "w") as msgFile:
-        csv.writer(msgFile, delimiter=",").writerows(postContent)
+def readPost(postID):
+    collumns = "id, title, author, content, image_id"
 
-def readPost(fileName):
-    commentList = []
+    result = executeDBCommand(f"SELECT {collumns} FROM posts WHERE id=?", (postID,), True)[0]
 
-    with open(f"./static/messages/{fileName}.csv", "r") as msgFile:
-        reader = csv.reader(msgFile, delimiter=",")
-        detailNames = reader.__next__()
-        postContent = reader.__next__()
+    return {descriptor:value for (descriptor,value) in zip(collumns.split(", "), result)}
 
-        for comment in reader:
-            commentList.append({"author" : comment[1], "comment" : comment[2]})
+def readPostComments(postID):
+    collumns = "author, content"
 
-    postContent = {detailName:postContent[i] for i,detailName in enumerate(detailNames)}
-    postContent["postID"] = fileName
-    postContent["comments"] = commentList
+    results = executeDBCommand(f"SELECT {collumns} FROM comments WHERE post_id=?", (postID,), True)
 
-    return postContent
+    return [{descriptor:value for (descriptor,value) in zip(collumns.split(", "), result)} for result in results]
 
-def readPostComments(fileName):
-    comments = []
-    with open(f"./static/messages/{fileName}.csv", "r") as msgFile:
-        reader = csv.reader(msgFile, delimiter=",")
-        reader.__next__(); reader.__next__()
-        for comment in reader:
-            print(comment)
-            comments.append({"author" : comment[1], "comment" : comment[2]})
-    return comments
+def commentOnPost(postID, details):
+    executeDBCommand("INSERT INTO comments (post_id, author, content) VALUES (?, ?, ?)", (postID, details["author"], details["comment"]))
 
-def commentOnPost(fileName, details):
-    commentContent = ["", details["author"], details["comment"], ""]
-
-    with open(f"./static/messages/{fileName}.csv", "a") as postFile:
-        csv.writer(postFile, delimiter=",").writerow(commentContent)
-
-allowedIPs = ["80.164.71.56", "195.249.78.90"]
+allowedIPs = ["80.164.71.56", "195.249.78.90", "127.0.0.1"]
 
 @app.before_request
 def checkIP():
@@ -87,16 +93,15 @@ def checkIP():
 
 @app.route("/")
 def showFeed():
-    messagesPath = os.listdir("./static/messages/")
-    messagesPath.sort(reverse=True)
-    messageList = []
 
-    for messageFile in messagesPath:
-        if messageFile.endswith(".csv"):
-            messageList.append(readPost(messageFile.replace(".csv", "")))
+    posts = listPosts()
 
-    return render_template("feed.html", messageList=messageList)
-    
+    for post in posts:
+        commentCount = countComments(post["id"])
+        post["commentCount"] = commentCount if commentCount else 0
+
+    return render_template("feed.html", messageList=posts)
+
 
 @app.route("/upload", methods=["GET", "POST"])
 def upload():
@@ -108,7 +113,7 @@ def upload():
             imageName = str(uuid.uuid4()) + "." + form.imageFile.data.filename.rsplit('.', 1)[1].lower()
             form.imageFile.data.save(os.path.join(app.config['UPLOAD_FOLDER'], imageName))
         else:
-            imageName = ""
+            imageName = None
 
         messageDetails = {"imageName" : imageName, "author" : form.author.data, "title" : " ".join(letter.capitalize() for letter in form.title.data.split()), "message" : form.message.data}
         fileName = datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")
@@ -120,23 +125,23 @@ def upload():
     else:
         return render_template("upload.html", form=form)
 
-@app.route("/post/<string:postID>/", methods=["GET", "POST"])
+@app.route("/post/<int:postID>/", methods=["GET", "POST"])
 def renderPost(postID):
     form = CommentForm()
-    postName = re.sub("[^0-9!:\-\.]+", "", postID)
     if form.validate_on_submit():
         commentDetails = {"author" : form.author.data, "comment" : form.comment.data}
-        commentOnPost(postName, commentDetails)
+        commentOnPost(postID, commentDetails)
 
         flash("Kommenterede på post")
-        return redirect(url_for("renderPost", postID=postName))
+        return redirect(url_for("renderPost", postID=postID))
 
     else:
         try:
-            post = readPost(postName)
-        except FileNotFoundError:
+            post = readPost(postID)
+            comments = readPostComments(post["id"])
+        except IndexError:
             return redirect(url_for("showFeed"))
-        return render_template("post.html", post=post, form=form)
+        return render_template("post.html", post=post, comments=comments, form=form)
 
 loadSecretKey()
 

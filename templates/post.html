@@ -12,19 +12,19 @@
 			{% endif %}
 	{% endwith %}
 
-	{% if post.imageName %}
-		<img id="postImage" src="{{ url_for('static', filename='images/' + post.imageName) }}"/>
+	{% if post.image_id %}
+		<img id="postImage" src="{{ url_for('static', filename='images/' + post.image_id) }}"/>
 	{% endif %}
 	<div class="threadPost" id="post">
 		<h3> {{ post.title }} </h3>
 		<p class="author"> {{ post.author }} </p>
-		<p class="message"> {{ post.message }} </p>
+		<p class="message"> {{ post.content }} </p>
 	</div>
 
-	{% for comment in post.comments %}
+	{% for comment in comments %}
 		<div class="threadPost">
 			<p class="author"> {{ comment.author }} </p>
-			<p class="message"> {{ comment.comment }} </p>
+			<p class="message"> {{ comment.content }} </p>
 		</div>
 	{% endfor %}
 
