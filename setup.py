@@ -2,7 +2,7 @@ import sqlite3
 
 import os
 
-from mainFlask import DBName
+from database import DBName
 
 def setupDB():
     if os.path.exists(DBName):

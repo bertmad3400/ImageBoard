@@ -11,8 +11,6 @@ import uuid
 from pathlib import Path
 import secrets
 
-import sqlite3
-
 from datetime import datetime
 
 app = Flask(__name__)
@@ -22,7 +20,9 @@ app.template_folder = "./templates"
 app.config['UPLOAD_FOLDER'] = './static/images/'
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1000 * 1000
 
-DBName = "BKI.db"
+allowedIPs = ["80.164.71.56", "195.249.78.90", "127.0.0.1"]
+
+from database import countComments, listPosts, saveNewPost, readPost, readPostComments, commentOnPost
 
 from forms import UploadForm, CommentForm
 
@@ -34,56 +34,6 @@ def loadSecretKey():
         with os.fdopen(os.open(Path("./secret.key"), os.O_WRONLY | os.O_CREAT, 0o400), 'w') as file:
             file.write(currentSecretKey)
         app.secret_key = currentSecretKey
-
-def executeDBCommand(command, paramaters, returnResponse=False):
-    conn = sqlite3.connect(DBName)
-    cur = conn.cursor()
-
-    cur.execute(command, paramaters)
-    if returnResponse:
-        DBResults = cur.fetchall()
-
-    conn.commit()
-    conn.close()
-    if returnResponse:
-        return DBResults
-
-def countComments(postID):
-    return executeDBCommand("SELECT COUNT(id) FROM comments WHERE post_id=?", (postID,), True)[0][0]
-
-def listPosts(limit=False):
-    collumns = "id, title, author, content, image_id"
-    command = f"SELECT {collumns} FROM posts ORDER BY id DESC"
-
-    if limit:
-        command += f" LIMIT {str(limit)}"
-
-    results = executeDBCommand(command, (), True)
-
-    return [{descriptor:value for (descriptor,value) in zip(collumns.split(", "), result)} for result in results]
-
-def saveNewPost(details):
-    executeDBCommand("INSERT INTO posts (title, author, content, image_id) VALUES (?, ?, ?, ?)", (details["title"], details["author"], details["message"], details["imageName"]))
-
-
-def readPost(postID):
-    collumns = "id, title, author, content, image_id"
-
-    result = executeDBCommand(f"SELECT {collumns} FROM posts WHERE id=?", (postID,), True)[0]
-
-    return {descriptor:value for (descriptor,value) in zip(collumns.split(", "), result)}
-
-def readPostComments(postID):
-    collumns = "author, content"
-
-    results = executeDBCommand(f"SELECT {collumns} FROM comments WHERE post_id=?", (postID,), True)
-
-    return [{descriptor:value for (descriptor,value) in zip(collumns.split(", "), result)} for result in results]
-
-def commentOnPost(postID, details):
-    executeDBCommand("INSERT INTO comments (post_id, author, content) VALUES (?, ?, ?)", (postID, details["author"], details["comment"]))
-
-allowedIPs = ["80.164.71.56", "195.249.78.90", "127.0.0.1"]
 
 @app.before_request
 def checkIP():
