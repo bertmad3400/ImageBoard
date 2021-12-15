@@ -1,6 +1,4 @@
- <!DOCTYPE html>
-
-{% extends "base.html" %}
+{% extends "wrapperBase.html" %}
 {% block title %}Feed{% endblock %}
 {% block head %}
 <link rel="stylesheet" href="{{ url_for('static', filename='CSS/feed.css') }}", rel="stylesheet">
@@ -30,7 +28,4 @@
 			</a>
 		{% endfor %}
 	</div>
-{% endblock %}
-
-{% block body %}
 {% endblock %}

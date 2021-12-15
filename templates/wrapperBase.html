@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block body %}
+		<div class="wrapper">
+		<h1>BKI - {{ self.title() }}</h1>
+			<h2>Et ImageBoard Udviklet Af Elever På BK For Elever På BK</h2>
+
+			<div id="navigator">
+				
+				<h3> <a href="{{ url_for('showFeed') }}">Feed</a> </h3>
+				<h3> <a href="{{ url_for('upload') }}">Upload</a> </h3>
+				
+			</div>
+			{% block wrapper %}
+			{% endblock %}
+		</div>
+{% endblock %}
