@@ -103,6 +103,13 @@ def commentOnPost(fileName, details):
     with open(f"./static/messages/{fileName}.csv", "a") as postFile:
         csv.writer(postFile, delimiter=",").writerow(commentContent)
 
+allowedIPs = ["80.164.71.56", "195.249.78.90"]
+
+@app.before_request
+def checkIP():
+    print(request.environ.get('HTTP_X_REAL_IP', request.remote_addr))
+    if request.environ.get('HTTP_X_REAL_IP', request.remote_addr) not in allowedIPs:
+        return render_template("accessDenied.html")
 
 @app.route("/")
 def showFeed():
