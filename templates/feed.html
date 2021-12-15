@@ -11,7 +11,7 @@
 			{% endif %}
 	{% endwith %}
 
-	<div id="board-grid">
+	<main id="board-grid">
 		{% for message in messageList %}
 			<a href="{{ url_for('renderPost', postID=message.id) }}">
 				<figure class="message-frame">
@@ -19,19 +19,25 @@
 						<img src="{{ url_for('static', filename='images/' + message.image_id) }}"/>
 					{% endif %}
 					<figcaption>
-						<h3> {{ message.title | title }} </h3>
-						<p class="author"> {{message.author}} </p>
-						{% for messageLine in message.content|formatPostContent %}
-							{% if messageLine.content %}
-								<p class="message {% if messageLine.green %}green-text{% endif %}" > {{ messageLine.content }} </p>
-							{% else %}
-								<br>
-							{% endif %}
-						{% endfor %}
-						<p class="commentCount"> {{ message.commentCount }} comments </p>
+						<header>
+							<h3> {{ message.title | title }} </h3>
+							<p class="author"> {{message.author}} </p>
+						</header>
+						<main>
+							{% for messageLine in message.content|formatPostContent %}
+								{% if messageLine.content %}
+									<p class="message {% if messageLine.green %}green-text{% endif %}" > {{ messageLine.content }} </p>
+								{% else %}
+									<br>
+								{% endif %}
+							{% endfor %}
+						</main>
+						<footer>
+							<p class="commentCount"> {{ message.commentCount }} comments </p>
+						</footer>
 					</figcaption>
 				</figure>
 			</a>
 		{% endfor %}
-	</div>
+	</main>
 {% endblock %}
