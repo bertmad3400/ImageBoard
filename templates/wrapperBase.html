@@ -1,4 +1,7 @@
 {% extends "base.html" %}
+{% block head %}
+	<link rel="stylesheet" href="{{ url_for('static', filename='CSS/base.css') }}", rel="stylesheet">
+{% endblock %}
 {% block body %}
 		<div class="wrapper">
 		<h1>BKI - {{ self.title() }}</h1>
